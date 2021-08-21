@@ -1,0 +1,1 @@
+digraph { graph [overlap=false, size=14]; root="$(go list -m)"; node [ shape = plaintext, fontname = "Helvetica", fontsize=24]; "$(go list -m)" [style = filled, fillcolor = "#E94762"];
