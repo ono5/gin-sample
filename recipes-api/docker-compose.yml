@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - 4000:4000
+      - 8080:8080
     volumes:
       - .:/app
     environment:
@@ -25,4 +25,18 @@ services:
     volumes:
       - ./db:/data/db
       - ./configdb:/data/configdb
-# mongodb://admin:password@localhost:27017/test
+  # mongodb://admin:password@localhost:27017/test
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis/conf:/usr/local/etc/redis
+
+  redis-gui:
+    image: redislabs/redisinsight:latest
+    ports:
+      - 8001:8001
+    links:
+      - redis
