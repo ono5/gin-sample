@@ -72,3 +72,7 @@ brew install gnuplot
 
 gnuplot apache-benchmark.p
 ```
+
+## JWT Decode
+
+[jwt](https://jwt.io/)

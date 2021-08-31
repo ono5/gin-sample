@@ -12,8 +12,11 @@ services:
     environment:
       - MONGO_URI=mongodb://admin:password@mongo:27017/test?authSource=admin
       - MONGO_DATABASE=demo
+      - X_API_KEY=aijdfoiajpdfioj
+      - JWT_SECRET=eipjdfpaijdpfa
     depends_on:
       - mongo
+      - redis
 
   mongo:
     image: mongo:4.4.3
@@ -34,9 +37,9 @@ services:
     volumes:
       - ./redis/conf:/usr/local/etc/redis
 
-  redis-gui:
-    image: redislabs/redisinsight:latest
-    ports:
-      - 8001:8001
-    links:
-      - redis
+  # redis-gui:
+  #   image: redislabs/redisinsight:latest
+  #   ports:
+  #     - 8001:8001
+  #   links:
+  #     - redis

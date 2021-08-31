@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -78,6 +79,12 @@ func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 //     '400':
 //         description: Invalid input
 func (handler *RecipesHandler) NewRecipeHandler(c *gin.Context) {
+	if c.GetHeader("X-API-KEY") != os.Getenv("X_API_KEY") {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "API key not provided or invalid",
+		})
+	}
+
 	var recipe models.Recipe
 	if err := c.ShouldBindJSON(&recipe); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -161,26 +168,18 @@ func (handler *RecipesHandler) UpdateRecipeHandler(c *gin.Context) {
 //         description: Successful operation
 //     '404':
 //         description: Invalid recipe ID
-// func (handler *RecipesHandler)DeleteRecipeHandler(c *gin.Context) {
-// 	id := c.Param("id")
-
-// 	index := -1
-// 	for i := 0; i < len(recipes); i++ {
-// 		if recipes[i].ID == id {
-// 			index = i
-// 			break
-// 		}
-// 	}
-
-// 	if index == -1 {
-// 		c.JSON(http.StatusNotFound, gin.H{"error": "models.Recipe not found"})
-// 		return
-// 	}
-
-// 	recipes = append(recipes[:index], recipes[index+1:]...)
-
-// 	c.JSON(http.StatusOK, gin.H{"message": "models.Recipe has been deleted"})
-// }
+func (handler *RecipesHandler) DeleteRecipeHandler(c *gin.Context) {
+	id := c.Param("id")
+	objectId, _ := primitive.ObjectIDFromHex(id)
+	_, err := handler.collection.DeleteOne(handler.ctx, bson.M{
+		"_id": objectId,
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Recipe has been deleted"})
+}
 
 // swagger:operation GET /recipes/search recipes findRecipe
 // Search recipes based on tags
